@@ -1,0 +1,39 @@
+plugins {
+    id 'com.android.library'
+    id 'org.jetbrains.kotlin.android'
+}
+apply from: "$rootDir/config.gradle"
+android {
+    compileSdk versions.compileSdk
+
+    defaultConfig {
+        minSdk versions.minSdk
+        targetSdk versions.targetSdk
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles "consumer-rules.pro"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = versions.jvmTarget
+    }
+}
+
+dependencies {
+    implementation "androidx.core:core-ktx:$versions.coreVersions"
+    implementation "androidx.appcompat:appcompat:$versions.appcompatVersions"
+    implementation "com.google.android.material:material:$versions.materialVersions"
+    testImplementation "junit:junit:$versions.junitVersions"
+    androidTestImplementation "androidx.test.ext:junit:$versions.testextVersions"
+    androidTestImplementation "androidx.test.espresso:espresso-core:$versions.testespressoVersions"
+}

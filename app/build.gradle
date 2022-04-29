@@ -1,0 +1,43 @@
+plugins {
+    id 'com.android.application'
+    id 'org.jetbrains.kotlin.android'
+}
+apply from: "$rootDir/config.gradle"
+android {
+    compileSdk versions.compileSdk
+
+    defaultConfig {
+        applicationId versions.applicationId
+        minSdk versions.minSdk
+        targetSdk versions.targetSdk
+        versionCode versions.versionCode
+        versionName versions.versionName
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = versions.jvmTarget
+    }
+}
+
+dependencies {
+    implementation "androidx.core:core-ktx:$versions.coreVersions"
+    implementation "androidx.appcompat:appcompat:$versions.appcompatVersions"
+    implementation "com.google.android.material:material:$versions.materialVersions"
+    implementation "androidx.constraintlayout:constraintlayout:$versions.constraintlayoutVersions"
+    implementation project(path: ':inputedit')
+    testImplementation "junit:junit:$versions.junitVersions"
+    androidTestImplementation "androidx.test.ext:junit:$versions.testextVersions"
+    androidTestImplementation "androidx.test.espresso:espresso-core:$versions.testespressoVersions"
+}

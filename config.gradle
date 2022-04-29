@@ -1,0 +1,30 @@
+ext.versions = [
+        //application
+        appliacationId          : 'com.huxiaobai.inputedittext',
+
+        //SDK config
+        compileSdk              : 31,
+        minSdk                  : 21,
+        versionCode             : 1,
+        versionName             : 'v1.0.0',
+        targetSdk               : 31,
+
+
+        //gradle config
+
+
+        //dependencies
+
+        coreVersions            : '1.7.0',
+        appcompatVersions       : '1.4.1',
+        materialVersions        : '1.5.0',
+        constraintlayoutVersions: '2.1.3',
+        junitVersions           : '4.13.2',
+        testextVersions         : '1.1.3',
+        testespressoVersions     : '3.4.0',
+
+        //jvm config
+        jvmTarget:'1.8'
+
+
+]

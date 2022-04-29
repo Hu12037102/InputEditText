@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <declare-styleable name="InputEditTextView">
+        <attr name="android:inputType" />
+        <attr name="etv_count" format="integer" />
+        <attr name="etv_check_background" format="reference|color" />
+        <attr name="etv_default_background" format="reference|color" />
+        <attr name="etv_item_width" format="dimension" />
+        <attr name="etv_item_height" format="dimension" />
+        <attr name="android:textSize" />
+        <attr name="android:textColor" />
+    </declare-styleable>
+</resources>

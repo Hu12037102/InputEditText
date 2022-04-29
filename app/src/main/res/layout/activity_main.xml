@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <com.huxiaobai.inputedit.weight.InputEditTextView
+        android:id="@+id/ietv_code_1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="text"
+        android:textColor="@android:color/holo_red_light"
+        app:etv_count="8"
+        app:etv_item_height="40dp"
+        app:etv_item_width="40dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="30dp"/>
+
+    <com.huxiaobai.inputedit.weight.InputEditTextView
+        android:id="@+id/ietv_code_2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:inputType="numberPassword"
+        android:textColor="@android:color/holo_red_light"
+        app:etv_count="6"
+        app:etv_item_height="40dp"
+        app:etv_item_width="40dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/ietv_code_1" />
+
+    <com.huxiaobai.inputedit.weight.InputEditTextView
+        android:id="@+id/ietv_code_3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:inputType="number"
+        android:textColor="@android:color/holo_red_light"
+        app:etv_count="4"
+        app:etv_item_height="40dp"
+        app:etv_item_width="40dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/ietv_code_2" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
