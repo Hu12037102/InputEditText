@@ -244,10 +244,27 @@ class InputEditTextView : ConstraintLayout {
                 setBackgroundColor(Color.TRANSPARENT)
                 isCursorVisible = false
                 setTextColor(Color.WHITE)
-                filters = arrayOf(InputFilter.LengthFilter(mCount))
+                filters = arrayOf(InputFilter.LengthFilter(mCount), object : InputFilter {
+                    override fun filter(
+                        source: CharSequence?,
+                        start: Int,
+                        end: Int,
+                        dest: Spanned?,
+                        dstart: Int,
+                        dend: Int
+                    ): CharSequence?{
+                        return if (TextUtils.equals(" ", source)) {
+                            ""
+                        } else {
+                            null
+                        }
+                    }
+
+                })
                 textSize = 0f
                 inputType = mInputType
                 addTextChangedListener(mTextChangeListener)
+                isLongClickable = false
                 addView(mEditText)
 
                 ConstraintSet().let {
@@ -283,7 +300,6 @@ class InputEditTextView : ConstraintLayout {
             Log.w("TextWatcher--", "onTextChanged--$s----$start----$before----$count")
             val text = getText(mEditText)
             val textLength = TextUtils.getTrimmedLength(text)
-
             for (i in 0 until childCount) {
                 val childView = getChildAt(i)
                 if (childView is AppCompatTextView) {

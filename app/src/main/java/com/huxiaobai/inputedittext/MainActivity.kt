@@ -2,7 +2,6 @@ package com.huxiaobai.inputedittext
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import androidx.viewpager.widget.ViewPager
 import com.huxiaobai.inputedit.weight.InputEditTextView
 
 class MainActivity : AppCompatActivity() {
