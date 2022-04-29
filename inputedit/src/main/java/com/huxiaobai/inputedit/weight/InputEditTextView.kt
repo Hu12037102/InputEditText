@@ -135,7 +135,7 @@ class InputEditTextView : ConstraintLayout {
         return this
     }
 
-    fun setInputType(inputType: Int = InputType.TYPE_TEXT_VARIATION_NORMAL): InputEditTextView {
+    fun setInputType(inputType: Int = InputType.TYPE_CLASS_TEXT): InputEditTextView {
         this.mInputType = inputType
         Log.w(TAG, "setInputType--")
         return this
