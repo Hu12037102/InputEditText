@@ -30,6 +30,11 @@ import com.huxiaobai.inputedit.R
  * 描述:
  */
 class InputEditTextView : ConstraintLayout {
+    private var mOnTextInputTextCallback: OnTextInputTextCallback? = null
+    fun setOnTextInputTextCallback(onTextInputTextCallback: OnTextInputTextCallback) {
+        this.mOnTextInputTextCallback = onTextInputTextCallback
+    }
+
     companion object {
         private const val DEFAULT_COUNT = 4
         private const val TAG = "InputEditTextView"
@@ -252,7 +257,7 @@ class InputEditTextView : ConstraintLayout {
                         dest: Spanned?,
                         dstart: Int,
                         dend: Int
-                    ): CharSequence?{
+                    ): CharSequence? {
                         return if (TextUtils.equals(" ", source)) {
                             ""
                         } else {
@@ -317,6 +322,9 @@ class InputEditTextView : ConstraintLayout {
                         childView.background = mCheckBackgroundDrawable
                     }
                 }
+            }
+            if (textLength == mCount) {
+                mOnTextInputTextCallback?.onComplete(text)
             }
 
         }
@@ -410,4 +418,7 @@ class InputEditTextView : ConstraintLayout {
         isFirst = true
     }
 
+    interface OnTextInputTextCallback {
+        fun onComplete(text: CharSequence)
+    }
 }
