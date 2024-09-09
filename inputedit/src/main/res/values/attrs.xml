@@ -10,4 +10,14 @@
         <attr name="android:textSize" />
         <attr name="android:textColor" />
     </declare-styleable>
+    <declare-styleable name="InputEditTextView2" >
+        <attr name="android:inputType" />
+        <attr name="etv2_count" format="integer" />
+        <attr name="etv2_check_background" format="reference|color" />
+        <attr name="etv2_default_background" format="reference|color" />
+        <attr name="etv2_item_width" format="dimension" />
+        <attr name="etv2_item_height" format="dimension" />
+        <attr name="android:textSize" />
+        <attr name="android:textColor" />
+    </declare-styleable>
 </resources>
