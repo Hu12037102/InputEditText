@@ -12,8 +12,10 @@ import android.util.AttributeSet
 import android.util.Log
 import android.util.TypedValue
 import android.view.Gravity
+import android.view.KeyEvent
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import android.widget.TextView
 import androidx.annotation.ColorInt
@@ -184,13 +186,39 @@ class InputEditTextView2 : ConstraintLayout {
 
             })
             if (i == 0) {
+                // textView.isFocusableInTouchMode = true
                 textView.requestFocus()
             } else {
+                //  textView.isFocusableInTouchMode = false
                 textView.clearFocus()
-            }
-            textView.isFocusableInTouchMode = false
-            addView(textView)
 
+            }
+
+            textView.imeOptions =
+                if (i == mCount - 1) EditorInfo.IME_ACTION_DONE else EditorInfo.IME_ACTION_NEXT
+            addView(textView)
+            textView.addTextChangedListener(mTextChangeListener)
+            textView.setOnKeyListener { v, keyCode, event ->
+                if (event.action == KeyEvent.ACTION_UP && keyCode == KeyEvent.KEYCODE_DEL&& v is EditText) {
+                    Log.w("OnKeyListener--", "${v is EditText}-----嘤嘤")
+                   if ( TextUtils.isEmpty(v.text)){
+                       val index = this.indexOfChild(v)
+                       if (index > 0) {
+                           getChildAt(index - 1).requestFocus()
+                       } else {
+                           v.requestFocus()
+                       }
+                   }
+
+                    return@setOnKeyListener true
+                }
+
+                return@setOnKeyListener false
+            }
+            /*   textView.setOnEditorActionListener { v, actionId, event ->
+                   if (actionId == EditorInfo)
+                   false
+               }*/
 
         }
         for (i in 0 until mCount) {
@@ -349,18 +377,22 @@ class InputEditTextView2 : ConstraintLayout {
                 val childView = getChildAt(i)
                 if (childView is EditText) {
                     Log.w("InputEditTextView2", "childView----$i")
+                    if (count > before) {
+                        if (i == textLength || (textLength == (i + 1) && i == childCount - 1)) {
+                            //  childView.isFocusableInTouchMode = true
+                            childView.requestFocus()
 
-                    // 移动焦点到下一个 EditText
-                    if (i < childCount - 1 && childView.text.length == 1) {
-                        val nextView = getChildAt(i + 1) as? EditText
-                        nextView?.requestFocus()
-                    }
-
-                    if (i == 0) {
-                        childView.requestFocus()
-                    } else {
-                        childView.clearFocus()
-                    }
+                        } else {
+                            // childView.isFocusableInTouchMode = false
+                            childView.clearFocus()
+                        }
+                    }/* else if (count < before) {
+                        if (i == textLength - 1) {
+                            childView.requestFocus()
+                        } else {
+                            childView.clearFocus()
+                        }
+                    }*/
 
                     // 更新背景颜色
                     if (i >= textLength) {
@@ -391,11 +423,6 @@ class InputEditTextView2 : ConstraintLayout {
         if (isFirst) {
             post {
                 createChildView()
-                this.forEach {
-                    if (it is EditText) {
-                        it.addTextChangedListener(mTextChangeListener)
-                    }
-                }
 
             }
             isFirst = false

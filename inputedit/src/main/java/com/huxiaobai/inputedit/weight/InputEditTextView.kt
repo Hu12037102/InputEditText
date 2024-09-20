@@ -1,5 +1,6 @@
 package com.huxiaobai.inputedit.weight
 
+import android.animation.ObjectAnimator
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
@@ -13,6 +14,7 @@ import android.util.TypedValue
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.LinearInterpolator
 import android.widget.TextView
 import androidx.annotation.ColorInt
 import androidx.annotation.ColorRes
@@ -21,7 +23,9 @@ import androidx.appcompat.widget.AppCompatTextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.content.ContextCompat
+import androidx.core.view.forEach
 import com.huxiaobai.inputedit.R
+
 
 /**
  * 作者: 胡庆岭
@@ -73,6 +77,23 @@ class InputEditTextView : ConstraintLayout {
         init(context, attrs)
     }
 
+    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(
+        context,
+        attrs,
+        defStyleAttr
+    ) {
+        init(context, attrs)
+    }
+
+    constructor(
+        context: Context,
+        attrs: AttributeSet?,
+        defStyleAttr: Int,
+        defStyleRes: Int
+    ) : super(context, attrs, defStyleAttr, defStyleRes) {
+        init(context, attrs)
+    }
+
     private var mCount: Int = DEFAULT_COUNT
     private var mCheckBackgroundDrawable: Drawable? = checkBackgroundDrawable()
     private var mDefaultBackgroundDrawable: Drawable? = defaultBackgroundDrawable()
@@ -82,6 +103,7 @@ class InputEditTextView : ConstraintLayout {
     private var isFirst = true
     private var mItemWidth: Int = getDefaultItemSize()
     private var mItemHeight: Int = getDefaultItemSize()
+    private val mIndicators = ArrayList<View>()
 
     @ColorInt
     private var mTextColor: Int = Color.BLACK
@@ -241,6 +263,43 @@ class InputEditTextView : ConstraintLayout {
             set.applyTo(this)
         }
 
+        mIndicators.clear()
+        this.forEach {
+            if (it is AppCompatTextView) {
+                val indicator = View(context)
+                indicator.layoutParams =
+                    MarginLayoutParams(dp2px(context, 1f), mItemHeight - dp2px(context, 20f))
+                indicator.background = GradientDrawable().also { drawable ->
+                    drawable.setColor(Color.BLACK)
+                    drawable.cornerRadius = dp2px(context, 10f).toFloat()
+                }
+                indicator.id = View.generateViewId()
+                indicator.tag = it.tag
+                this.addView(indicator)
+                indicator.visibility = if (it.tag == 0) View.VISIBLE else View.GONE
+
+                mIndicators.add(indicator)
+                val animator = ObjectAnimator.ofFloat(indicator, "alpha", 1f, 0f)
+                animator.setDuration(700) // Duration in milliseconds
+                animator.repeatCount = ObjectAnimator.INFINITE
+                animator.repeatMode = ObjectAnimator.REVERSE
+                animator.interpolator = LinearInterpolator()
+                animator.start()
+
+
+                val set = ConstraintSet()
+                set.clone(this)
+                set.connect(indicator.id, ConstraintSet.START, it.id, ConstraintSet.START)
+                set.connect(indicator.id, ConstraintSet.END, it.id, ConstraintSet.END)
+                set.connect(indicator.id, ConstraintSet.TOP, it.id, ConstraintSet.TOP)
+                set.connect(indicator.id, ConstraintSet.BOTTOM, it.id, ConstraintSet.BOTTOM)
+                set.applyTo(this)
+
+
+            }
+
+        }
+
 
 
         if (mEditText == null) {
@@ -329,6 +388,15 @@ class InputEditTextView : ConstraintLayout {
                     }
                 }
             }
+            mIndicators.forEach {
+                if (it.tag == text.length) {
+                    it.visibility = VISIBLE
+                } else {
+                    it.visibility = GONE
+                }
+
+            }
+
             if (textLength == mCount) {
                 mOnTextInputTextCallback?.onComplete(text)
             }

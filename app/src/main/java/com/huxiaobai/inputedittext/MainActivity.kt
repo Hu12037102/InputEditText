@@ -11,11 +11,11 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         val mIetCodeView1 = findViewById<InputEditTextView2>(R.id.ietv_code_1)
-       /* mIetCodeView1.setBackground()
-        val mIetCodeView2 = findViewById<InputEditTextView2>(R.id.ietv_code_2)
-        mIetCodeView2.setBackground()
-        val mIetCodeView3 = findViewById<InputEditTextView>(R.id.ietv_code_3)
-        mIetCodeView3.setBackground()*/
+        mIetCodeView1.setBackground()
+         val mIetCodeView2 = findViewById<InputEditTextView2>(R.id.ietv_code_2)
+         mIetCodeView2.setBackground()
+         val mIetCodeView3 = findViewById<InputEditTextView>(R.id.ietv_code_3)
+         mIetCodeView3.setBackground()
         arrayListOf("1").also {
 
             it.forEach { item ->
