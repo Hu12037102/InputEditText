@@ -167,6 +167,9 @@ class InputEditTextView : ConstraintLayout {
         Log.w(TAG, "setInputType--")
         return this
     }
+    fun clear(){
+        mEditText?.text?.clear()
+    }
 
 
     private fun createChildView() {
@@ -381,6 +384,7 @@ class InputEditTextView : ConstraintLayout {
                         }
                     }
                     if (i >= textLength) {
+                        Log.w("onTextChanged--","$i----$textLength")
                         childView.text = null
                         childView.background = mDefaultBackgroundDrawable
                     } else {
