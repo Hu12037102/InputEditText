@@ -1,5 +1,6 @@
 package com.huxiaobai.inputedittext
 
+import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
@@ -20,6 +21,7 @@ class MainActivity : AppCompatActivity() {
          mIetCodeView2.setBackground()
          val mIetCodeView3 = findViewById<InputEditTextView>(R.id.ietv_code_3)
          mIetCodeView3.setBackground()
+        mIetCodeView3.setCursorColor(Color.parseColor("#7260F7"))
         Handler(Looper.getMainLooper()).postDelayed({
            // mIetCodeView3.clear()
         },3000)

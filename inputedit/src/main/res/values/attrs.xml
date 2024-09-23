@@ -7,10 +7,12 @@
         <attr name="etv_default_background" format="reference|color" />
         <attr name="etv_item_width" format="dimension" />
         <attr name="etv_item_height" format="dimension" />
+        <attr name="etv_show_keyboard" format="boolean" />
+        <attr name="etv_cursor_color" format="color|reference"/>
         <attr name="android:textSize" />
         <attr name="android:textColor" />
     </declare-styleable>
-    <declare-styleable name="InputEditTextView2" >
+    <declare-styleable name="InputEditTextView2">
         <attr name="android:inputType" />
         <attr name="etv2_count" format="integer" />
         <attr name="etv2_check_background" format="reference|color" />

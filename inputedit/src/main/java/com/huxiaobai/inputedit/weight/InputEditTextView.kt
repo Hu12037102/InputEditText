@@ -7,6 +7,9 @@ import android.graphics.Color
 import android.graphics.Rect
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
+import android.inputmethodservice.InputMethodService
+import android.os.Handler
+import android.os.Looper
 import android.text.*
 import android.util.AttributeSet
 import android.util.Log
@@ -14,7 +17,9 @@ import android.util.TypedValue
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.LinearInterpolator
+import android.view.Window
+import android.view.animation.AccelerateDecelerateInterpolator
+import android.view.inputmethod.InputMethodManager
 import android.widget.TextView
 import androidx.annotation.ColorInt
 import androidx.annotation.ColorRes
@@ -22,7 +27,9 @@ import androidx.appcompat.widget.AppCompatEditText
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.view.WindowCompat
 import androidx.core.view.forEach
 import com.huxiaobai.inputedit.R
 
@@ -100,10 +107,15 @@ class InputEditTextView : ConstraintLayout {
     private var mInputType: Int = InputType.TYPE_CLASS_TEXT
     private var mTextSize: Int = getDefaultTextSize()
     private var mEditText: AppCompatEditText? = null
-    private var isFirst = true
+    private var isFirstSizeChange = true
     private var mItemWidth: Int = getDefaultItemSize()
     private var mItemHeight: Int = getDefaultItemSize()
     private val mIndicators = ArrayList<View>()
+    private var isFirstWindowFocus: Boolean = true
+    private var isShowSoftKeyboard = true
+
+    @ColorInt
+    private var mCursorColor = Color.BLACK
 
     @ColorInt
     private var mTextColor: Int = Color.BLACK
@@ -139,6 +151,8 @@ class InputEditTextView : ConstraintLayout {
                     R.styleable.InputEditTextView_etv_item_height,
                     getDefaultItemSize()
                 )
+            mCursorColor = typedArray.getColor(R.styleable.InputEditTextView_etv_cursor_color,Color.BLACK)
+            isShowSoftKeyboard = typedArray.getBoolean(R.styleable.InputEditTextView_etv_show_keyboard,true)
             typedArray.recycle()
         }
     }
@@ -149,6 +163,11 @@ class InputEditTextView : ConstraintLayout {
     fun setCount(count: Int = DEFAULT_COUNT): InputEditTextView {
         this.mCount = count
         Log.w(TAG, "setCount--")
+        return this
+    }
+
+    fun setCursorColor(@ColorInt color: Int): InputEditTextView {
+        this.mCursorColor = color
         return this
     }
 
@@ -167,7 +186,12 @@ class InputEditTextView : ConstraintLayout {
         Log.w(TAG, "setInputType--")
         return this
     }
-    fun clear(){
+    fun isShowSoftKeyboard(isShow:Boolean): InputEditTextView{
+        this.isShowSoftKeyboard = isShow
+        return this
+    }
+
+    fun clear() {
         mEditText?.text?.clear()
     }
 
@@ -270,10 +294,13 @@ class InputEditTextView : ConstraintLayout {
         this.forEach {
             if (it is AppCompatTextView) {
                 val indicator = View(context)
-                indicator.layoutParams =
-                    MarginLayoutParams(dp2px(context, 1f), mItemHeight - dp2px(context, 20f))
+                indicator.layoutParams = ViewGroup.LayoutParams(
+                    dp2px(context, 1.5f),
+                    (mItemHeight.toFloat() / 7 * 4).toInt()
+                )
+                /* MarginLayoutParams(dp2px(context, 1f), mItemHeight - dp2px(context, 20f))*/
                 indicator.background = GradientDrawable().also { drawable ->
-                    drawable.setColor(Color.BLACK)
+                    drawable.setColor(mCursorColor)
                     drawable.cornerRadius = dp2px(context, 10f).toFloat()
                 }
                 indicator.id = View.generateViewId()
@@ -283,10 +310,10 @@ class InputEditTextView : ConstraintLayout {
 
                 mIndicators.add(indicator)
                 val animator = ObjectAnimator.ofFloat(indicator, "alpha", 1f, 0f)
-                animator.setDuration(700) // Duration in milliseconds
+                animator.setDuration(800) // Duration in milliseconds
                 animator.repeatCount = ObjectAnimator.INFINITE
                 animator.repeatMode = ObjectAnimator.REVERSE
-                animator.interpolator = LinearInterpolator()
+                animator.interpolator = AccelerateDecelerateInterpolator()
                 animator.start()
 
 
@@ -375,16 +402,14 @@ class InputEditTextView : ConstraintLayout {
             val textLength = TextUtils.getTrimmedLength(text)
             for (i in 0 until childCount) {
                 val childView = getChildAt(i)
-                if (childView is AppCompatTextView) {
-                    if (childView.tag is Int) {
-                        for (index in 0 until textLength) {
-                            if (childView.tag == index) {
-                                childView.text = "${text[index]}"
-                            }
+                if (childView is AppCompatTextView && childView.tag is Int) {
+                    for (index in 0 until textLength) {
+                        if (childView.tag == index) {
+                            childView.text = "${text.getOrNull(index) ?: return}"
                         }
                     }
                     if (i >= textLength) {
-                        Log.w("onTextChanged--","$i----$textLength")
+                        Log.w("onTextChanged--", "$i----$textLength")
                         childView.text = null
                         childView.background = mDefaultBackgroundDrawable
                     } else {
@@ -417,9 +442,9 @@ class InputEditTextView : ConstraintLayout {
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
         Log.w(TAG, "onSizeChanged--$w----$h----$oldw----$oldh")
-        if (isFirst) {
+        if (isFirstSizeChange) {
             post { createChildView() }
-            isFirst = false
+            isFirstSizeChange = false
         }
 
 
@@ -428,7 +453,14 @@ class InputEditTextView : ConstraintLayout {
     override fun onWindowFocusChanged(hasWindowFocus: Boolean) {
         super.onWindowFocusChanged(hasWindowFocus)
         Log.w(TAG, "onWindowFocusChanged--$hasWindowFocus")
-
+        if (isFirstWindowFocus&& isShowSoftKeyboard) {
+            val systemService =  context.getSystemService(Context.INPUT_METHOD_SERVICE)
+            if (systemService is InputMethodManager){
+                mEditText?.requestFocus()
+                systemService.showSoftInput(mEditText,InputMethodManager.SHOW_IMPLICIT)
+            }
+            isFirstWindowFocus=false
+        }
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
@@ -495,7 +527,7 @@ class InputEditTextView : ConstraintLayout {
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
         mEditText?.removeTextChangedListener(mTextChangeListener)
-        isFirst = true
+        isFirstSizeChange = true
     }
 
     interface OnTextInputTextCallback {
